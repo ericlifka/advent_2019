@@ -6,26 +6,31 @@ let program = getLines('02')[ 0 ]
                 .map(parseInteger)
   , cloneProgram = () => program.slice(0)
 
-export const day02part1 = (p = cloneProgram()) => {
-  p[ 1 ] = 12
-  p[ 2 ] = 2
+function runProgram(noun, verb, p = cloneProgram()) {
+  p[ 1 ] = noun
+  p[ 2 ] = verb
+  let c = 0
 
-  let cur = 0
   while (true) {
-    let [ op, mem1, mem2, res ] = p.slice(cur, cur + 4)
+    let [ op, m1, m2, res ] = p.slice(c, c + 4)
 
     if ( op === 1 ) {
-      p[ res ] = p[ mem1 ] + p[ mem2 ]
-    }
-    if ( op === 2 ) {
-      p[ res ] = p[ mem1 ] * p[ mem2 ]
-    }
-    if ( op === 99 ) {
-      break
+      p[res] = p[m1] + p[m2]
+      c += 4
     }
 
-    cur += 4
+    if ( op === 2 ) {
+      p[res] = p[m1] * p[m2]
+      c += 4
+    }
+
+    if ( op === 99 ) {
+      c += 1
+      break
+    }
   }
 
   return p[ 0 ]
 }
+
+export const day02part1 = () => runProgram(12, 2)
