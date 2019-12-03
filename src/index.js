@@ -1,4 +1,5 @@
 import { day01part1, day01part2 } from "./01.js"
+import { timeFunc } from "./time-func.js"
 
 const solutions =
 { '011': () => day01part1()
@@ -6,12 +7,16 @@ const solutions =
 }
 
 let day = process.argv[ 2 ]
-let part1 = solutions[ `${day}1` ]
-let part2 = solutions[ `${day}2` ]
+  , part1 = solutions[ `${day}1` ]
+  , part2 = solutions[ `${day}2` ]
+  , time
+  , result
 
 if (part1) {
-  console.log(part1())
+  time = timeFunc(() => result = part1())
+  console.log(`Part 1:\n  solution: ${result}\n  time: ${time} ms\n`);
 }
 if (part2) {
-  console.log(part2())
+  time = timeFunc(() => result = part2())
+  console.log(`Part 2:\n  solution: ${result}\n  time: ${time} ms\n`);
 }
