@@ -34,3 +34,13 @@ function runProgram(noun, verb, p = cloneProgram()) {
 }
 
 export const day02part1 = () => runProgram(12, 2)
+
+export const day02part2 = () => {
+  for (let x = 0; x <= 99; x++) {
+    for (let y = 0; y <= 99; y++) {
+      if (runProgram(x, y) === 19690720) {
+        return 100 * x + y
+      }
+    }
+  }
+}

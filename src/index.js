@@ -1,11 +1,12 @@
 import { timeFunc } from "./time-func.js"
 import { day01part1, day01part2 } from "./01.js"
-import { day02part1 } from "./02.js"
+import { day02part1, day02part2 } from "./02.js"
 
 const solutions =
 { '011': () => day01part1()
 , '012': () => day01part2()
 , '021': () => day02part1()
+, '022': () => day02part2()
 }
 
 let day = process.argv[ 2 ]
