@@ -3,6 +3,6 @@
 
 standalone node scripts (because I'm lazy)
 ```
-$> node 01.js
+$> node index.js
 ````
 etc...
