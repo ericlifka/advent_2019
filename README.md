@@ -1,8 +1,7 @@
 # Advent of Code!
 ## 2019 edition
 
-standalone node scripts (because I'm lazy)
+simple node module (because I'm lazy...)
 ```
-$> node index.js
+$> npm start 01|02|03...
 ````
-etc...
