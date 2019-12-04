@@ -41,10 +41,7 @@ export const day03part1 = () => {
     }
   })
 
-  return collisions.reduce((min, cur) =>
-    (cur < min)
-      ? cur
-      : min, Infinity)
+  return collisions.sort(ascending)[0]
 }
 
 export const day03part2 = () => {
@@ -68,6 +65,5 @@ export const day03part2 = () => {
     }
   })
 
-  collisions.sort(ascending)
-  return collisions[0]
+  return collisions.sort(ascending)[0]
 }
