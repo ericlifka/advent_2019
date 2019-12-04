@@ -1,4 +1,4 @@
-import { parseInteger } from "./converters.js"
+import { parseInteger, ascending } from "./converters.js"
 import { getLines } from "./input-helpers.js"
 
 let input = getLines('03')
@@ -47,4 +47,27 @@ export const day03part1 = () => {
       : min, Infinity)
 }
 
-export const day03part2 = () => null
+export const day03part2 = () => {
+  let grid = abstractGrid()
+    , collisions = [ ]
+    , counter1 = 0
+    , counter2 = 0
+
+  traversePath(input[0], (x, y) => {
+    ++counter1
+    if (!getPoint(grid, x, y)) {
+      setPoint(grid, x, y, counter1)
+    }
+  })
+
+  traversePath(input[1], (x, y) => {
+    ++counter2
+    let firstWire = getPoint(grid, x, y)
+    if (firstWire) {
+      collisions.push(firstWire + counter2)
+    }
+  })
+
+  collisions.sort(ascending)
+  return collisions[0]
+}
