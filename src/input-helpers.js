@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { parseInteger } from './converters.js'
 
 export const getLines = day =>
   fs.readFileSync(`data/${day}`, { encoding: "utf8" })
@@ -7,3 +8,8 @@ export const getLines = day =>
 
 export const getLine = day =>
   getLines(day)[ 0 ]
+
+export const getNumberArray = day =>
+  getLine(day)
+    .split(',')
+    .map(parseInteger)

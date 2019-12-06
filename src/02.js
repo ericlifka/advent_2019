@@ -1,9 +1,7 @@
-import { getLines } from './input-helpers.js'
+import { getNumberArray } from './input-helpers.js'
 import { parseInteger } from './converters.js'
 
-let program = getLines('02')[ 0 ]
-                .split(',')
-                .map(parseInteger)
+let program = getNumberArray('02')
   , cloneProgram = () => program.slice(0)
 
 function runProgram(noun, verb, p = cloneProgram()) {
