@@ -9,45 +9,36 @@ const loadProgram = (instructions, input) => (
   })
 
 function stepProgram(program) {
-  let [ modes, opcode ] = parseInstruction(program.instructions[ program.ip ])
-  let param1, param2, address, input
+  let [ modes, opcode ] = parseInstruction(program.instructions[program.ip])
 
-  switch (opcode) {
-    case 99:
-      program.halt = true
-      break
+  if (opcode === 99) program.halt = true
 
-    case 1:
-      [ param1, param2 ] = loadParams(program, 2, modes)
-      address = program.instructions[ program.ip + 3 ]
-      program.instructions[address] = param1 + param2
-      program.ip += 4
-      break
+  else if (opcode === 1) mathInstruction(program, modes, (a, b) => a + b)
 
-    case 2:
-      [ param1, param2 ] = loadParams(program, 2, modes)
-      address = program.instructions[ program.ip + 3 ]
-      program.instructions[address] = param1 * param2
-      program.ip += 4
-      break
+  else if (opcode === 2) mathInstruction(program, modes, (a, b) => a * b)
 
-    case 3:
-      input = program.input.shift()
-      if (!input) throw "Program requested input when input buffer was empty"
-      address = program.instructions[ program.ip + 1 ]
-      program.instructions[address] = input
-      program.ip += 2
-      break
-
-    case 4:
-      [ param1 ] = loadParams(program, 1, modes)
-      program.output.push(param1)
-      program.ip += 2
-      break
-
-    default:
-      throw `Program encountered opcode it couldn't run ${opcode}`
+  else if (opcode === 3) {
+    let input = program.input.shift()
+    if (!input) throw "Program requested input when input buffer was empty"
+    let address = program.instructions[ program.ip + 1 ]
+    program.instructions[address] = input
+    program.ip += 2
   }
+
+  else if (opcode === 4) {
+    let [ param ] = loadParams(program, 1, modes)
+    program.output.push(param)
+    program.ip += 2
+  }
+
+  else throw `Program encountered opcode it couldn't run ${opcode}`
+}
+
+function mathInstruction(program, modes, fn) {
+  let [ param1, param2 ] = loadParams(program, 2, modes)
+  let address = program.instructions[ program.ip + 3 ]
+  program.instructions[address] = fn(param1, param2)
+  program.ip += 4
 }
 
 function loadParams(program, count, modes) {
