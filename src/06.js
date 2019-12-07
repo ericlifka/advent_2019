@@ -5,18 +5,12 @@ let links =
 getLines('06')
   .map(splitter(')'))
 
-function countOrbits(node) {
-  let count = 0
-  while (node.parent) {
-    node = node.parent
-    ++count
-  }
-  return count
-}
+const countOrbits = (node, count = 0) =>
+  !node.parent ? count
+               : countOrbits(node.parent, count + 1)
 
 export const day06part1 = () => {
   let nodes = { }
-  console.log(JSON.stringify(links))
 
   links.forEach( ([parent, child]) => {
     if (!nodes[parent])
@@ -29,9 +23,12 @@ export const day06part1 = () => {
   links.forEach( ([parent, child]) =>
     nodes[child].parent = nodes[parent])
 
-  let orbits = Object.keys(nodes).map( name => ({ name, count: countOrbits(nodes[name])}))
-  console.log(JSON.stringify(orbits))
-  return orbits.reduce((sum, cur) => sum + cur.count, 0)
+  let orbits = Object.keys(nodes).map( name =>
+    countOrbits(nodes[name]))
+
+  return orbits.reduce((sum, cur) =>
+    sum + cur
+  , 0)
 }
 
 export const day06part2 = () => null
