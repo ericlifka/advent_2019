@@ -1,14 +1,15 @@
 import { parseInteger } from "./converters.js"
 
-const loadProgram = (instructions, input) => (
+export const loadProgram = (instructions, input) => (
   { ip: 0
   , instructions: instructions.slice(0)
   , input: input.slice(0)
   , output: [ ]
   , halt: false
+  , waiting: false
   })
 
-function stepProgram(program) {
+export function stepProgram(program) {
   let [ modes, opcode ] = parseInstruction(program.instructions[program.ip])
 
   if (opcode === 99) program.halt = true
@@ -48,13 +49,16 @@ function mathInstruction(program, modes, fn) {
 }
 
 function inputInstruction(program) {
-  if (program.input.length <= 0)
-    throw "Program requested input when input buffer was empty"
+  if (program.input.length <= 0) {
+    program.waiting = true
+  } else {
+    let input = program.input.shift()
+      , address = program.instructions[ program.ip + 1 ]
 
-  let input = program.input.shift()
-  let address = program.instructions[ program.ip + 1 ]
-  program.instructions[address] = input
-  program.ip += 2
+    program.instructions[address] = input
+    program.ip += 2
+    program.waiting = false
+  }
 }
 
 function outputInstruction(program, modes) {
@@ -112,7 +116,7 @@ function parseInstruction(instruction) {
 export function runProgram(instructions, input) {
   let program = loadProgram(instructions, input)
 
-  while (!program.halt)
+  while (!program.halt && !program.waiting)
     stepProgram(program)
 
   return program.output
