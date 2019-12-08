@@ -16,18 +16,14 @@ const testLoopingSequence = (sequence) => {
     , lastAmp = amplifiers[ amplifiers.length - 1 ]
 
   firstAmp.input.push(0)
-  for (let i = 0; i < amplifiers.length; i++) {
+  for (let i = 0; i < amplifiers.length; i++)
     amplifiers[i].output = amplifiers[ (i + 1) % amplifiers.length ].input
-  }
 
-  while (!lastAmp.halt) {
-    for (let amp of amplifiers) {
-      amp.waiting = false
-      while (!amp.waiting && !amp.halt) {
+  while (!lastAmp.halt)
+    for (let amp of amplifiers)
+      do
         stepProgram(amp)
-      }
-    }
-  }
+      while (!amp.waiting && !amp.halt)
 
   return lastAmp.output[ 0 ]
 }
@@ -38,7 +34,6 @@ export const day07part1 = () =>
     .sort(descending)[ 0 ]
 
 export const day07part2 = () =>
-  // testLoopingSequence([9,7,8,5,6])
   permutations([5, 6, 7, 8, 9])
     .map( sequence => testLoopingSequence(sequence) )
     .sort(descending)[ 0 ]
