@@ -6,6 +6,7 @@ import { day04part1, day04part2 } from "./04.js"
 import { day05part1, day05part2 } from "./05.js"
 import { day06part1, day06part2 } from "./06.js"
 import { day07part1, day07part2 } from "./07.js"
+import { day08part1, day08part2 } from "./08.js"
 
 const solutions =
 { '011': day01part1, '012': day01part2
@@ -15,6 +16,7 @@ const solutions =
 , '051': day05part1, '052': day05part2
 , '061': day06part1, '062': day06part2
 , '071': day07part1, '072': day07part2
+, '081': day08part1, '082': day08part2
 }
 
 let day = process.argv[ 2 ]
