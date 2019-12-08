@@ -22,4 +22,18 @@ export const day08part1 = () => {
   return minLayer.reduce(countOne, 0) * minLayer.reduce(countTwo, 0)
 }
 
-export const day08part2 = () => null
+export const day08part2 = () => {
+  let layers = chunkData(25 * 6, input.slice())
+    , pixelReducer = (i) => (rendered, layer) =>
+                              rendered === '2'
+                                ? layer[i]
+                                : rendered
+    , image = layers[0].map( (_, i) => layers.reduce(pixelReducer(i), '2'))
+    , rows = chunkData(25, image)
+    , renderChars =
+      { '1': '[]'
+      , '0': '  '
+      }
+
+  return "\n" + rows.map( row => row.map( i => renderChars[i] ).join('') ).join('\n')
+}
