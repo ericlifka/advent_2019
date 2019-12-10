@@ -105,8 +105,8 @@ function loadParams(program, modes, paramCount, addressCount) {
       ( mode === 1
         ? param
       : mode === 2
-        ? program.instructions[ param + program.relativeBase ]
-        : program.instructions[ param ] )
+        ? program.instructions[ param + program.relativeBase ] || 0
+        : program.instructions[ param ] || 0 )
   }
   for (let i = 0; i < addressCount; i++) {
     let mode = modes[ i + paramCount ]
@@ -132,7 +132,7 @@ function parseInstruction(instruction) {
   return [ modes, opcode ]
 }
 
-export function runProgram(instructions, input) {
+export function runProgram(instructions, input = []) {
   let program = loadProgram(instructions, input)
 
   while (!program.halt && !program.waiting)
