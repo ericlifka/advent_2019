@@ -7,6 +7,7 @@ export const loadProgram = (instructions, input) => (
   , output: [ ]
   , halt: false
   , waiting: false
+  , relativeBase: 0
   })
 
 export function stepProgram(program) {
@@ -21,7 +22,7 @@ export function stepProgram(program) {
     mathInstruction(program, modes, (left, right) => left * right)
 
   else if (opcode === 3) // input
-    inputInstruction(program)
+    inputInstruction(program, modes)
 
   else if (opcode === 4) // output
     outputInstruction(program, modes)
@@ -38,22 +39,24 @@ export function stepProgram(program) {
   else if (opcode === 8) // equal-to
     comparisonInstruction(program, modes, (left, right) => left === right)
 
+  else if (opcode === 9) // adjust-relative-base
+    adjustRelativeBaseInstruction(program, modes)
+
   else throw `Program encountered opcode it couldn't run ${opcode}`
 }
 
 function mathInstruction(program, modes, fn) {
-  let [ param1, param2 ] = loadParams(program, 2, modes)
-  let address = program.instructions[ program.ip + 3 ]
+  let [ param1, param2, address ] = loadParams(program, modes, 2, 1)
   program.instructions[address] = fn(param1, param2)
   program.ip += 4
 }
 
-function inputInstruction(program) {
+function inputInstruction(program, modes) {
   if (program.input.length <= 0) {
     program.waiting = true
   } else {
-    let input = program.input.shift()
-      , address = program.instructions[ program.ip + 1 ]
+    let [ address ] = loadParams(program, modes, 0, 1)
+      , input = program.input.shift()
 
     program.instructions[address] = input
     program.ip += 2
@@ -62,22 +65,21 @@ function inputInstruction(program) {
 }
 
 function outputInstruction(program, modes) {
-  let [ param ] = loadParams(program, 1, modes)
+  let [ param ] = loadParams(program, modes, 1, 0)
   program.output.push(param)
   program.ip += 2
 }
 
 function jumpInstruction(program, modes, fn) {
-  let [ testVal, target ] = loadParams(program, 2, modes)
-  if (fn(testVal))
-    program.ip = target
-  else
-    program.ip += 3
+  let [ testVal, target ] = loadParams(program, modes, 2, 0)
+  program.ip =
+    fn(testVal)
+      ? target
+      : program.ip + 3
 }
 
 function comparisonInstruction(program, modes, fn) {
-  let [ leftVal, rightVal ] = loadParams(program, 2, modes)
-  let address = program.instructions[ program.ip + 3 ]
+  let [ leftVal, rightVal, address ] = loadParams(program, modes, 2, 1)
 
   program.instructions[address] =
     fn(leftVal, rightVal)
@@ -87,18 +89,35 @@ function comparisonInstruction(program, modes, fn) {
   program.ip += 4
 }
 
-function loadParams(program, count, modes) {
-  let params = [ ]
-  for (let i = 0; i < count; i++) {
+function adjustRelativeBaseInstruction(program, modes) {
+  let [ param ] = loadParams(program, modes, 1, 0)
+  program.relativeBase += param
+  program.ip += 2
+}
+
+function loadParams(program, modes, paramCount, addressCount) {
+  let results = [ ]
+  for (let i = 0; i < paramCount; i++) {
     let mode = modes[i]
       , param = program.instructions[ program.ip + i + 1 ]
 
-    params.push(
-      mode === 1
+    results.push
+      ( mode === 1
         ? param
-        : program.instructions[param])
+      : mode === 2
+        ? program.instructions[ param + program.relativeBase ]
+        : program.instructions[ param ] )
   }
-  return params
+  for (let i = 0; i < addressCount; i++) {
+    let mode = modes[ i + paramCount ]
+      , address = program.instructions[ program.ip + paramCount + 1 + i ]
+
+    results.push
+      ( mode === 2
+        ? address + program.relativeBase
+        : address )
+  }
+  return results
 }
 
 function parseInstruction(instruction) {
