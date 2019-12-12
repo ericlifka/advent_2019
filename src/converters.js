@@ -11,5 +11,5 @@ export const reduceCountOccurance = (searchElem) =>
 export const ascending = (l, r) => l - r
 export const descending = (l, r) => r - l
 
-export const splitter = splitStr =>
+export const splitter = (splitStr = '') =>
   str => str.split(splitStr)
