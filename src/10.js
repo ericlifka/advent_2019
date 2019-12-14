@@ -12,9 +12,49 @@ getLines('10')
   .flat()
   .filter(elem => !!elem)
 
-const getOthers = (first, second) =>
-  coords.filter((_, i) => i != first && i != second)
+const splitPoints = pivot => {
+  let left = []
+    , right = []
 
+  coords.forEach( point => {
+    if (point.x < pivot.x)
+      left.push(point)
+    else if (point.x > pivot.x)
+      right.push(point)
+    else if (point.y < pivot.y)
+      left.push(point)
+    else if (point.y > pivot.y)
+      right.push(point)
+  })
+
+  return [ left, right ]
+}
+
+const slopeBetween = (left, right) => ( left.y - right.y ) / ( left.x - right.x )
+
+const countSlopes = point => {
+  let [ left, right ] =
+  splitPoints(point)
+    .map( group => group
+      .map( p => slopeBetween(p, point) ))
+    .map( slopes => [...new Set(slopes)] )
+
+  return left.length + right.length
+}
+
+export const day10part1 = () => {
+  let results =
+  coords
+    .map( c => (
+      { point: c
+      , count: countSlopes(c)
+      }))
+    .sort((l, r) => r.count - l.count)
+
+  results.forEach(r => console.log(JSON.stringify(r)))
+
+  return JSON.stringify(results[ 0 ])
+}
 // line: y = m*x + b
 const getLineBetween =
 ( first, second
@@ -26,7 +66,7 @@ const getLineBetween =
 const checkPointOnLine = (line, point) => line.m * point.x + line.b == point.y
 const sameLine = (left, right) => left.m == right.m && left.b == right.b
 
-export const day10part1 = () => {
+export const _day10part1 = () => {
   let lines =
   coords.map( first =>
     coords
