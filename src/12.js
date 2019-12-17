@@ -1,4 +1,4 @@
-import { reduceSum } from "./converters.js"
+import { reduceSum, descending } from "./converters.js"
 
 let moons =
   [ [ 17,  -12,  13 ]
@@ -69,4 +69,51 @@ export const day12part1 = () => {
     .reduce(reduceSum)
 }
 
-export const day12part2 = () => null
+const varadd = ([l1, l2, l3, l4], [r1, r2, r3, r4]) => [l1 + r1, l2 + r2, l3 + r3, l4 + r4]
+const varequal = ([l1, l2, l3, l4], [r1, r2, r3, r4]) =>
+  (  l1 == r1
+  && l2 == r2
+  && l3 == r3
+  && l4 == r4  )
+
+function timeToRepeat(p_start) {
+  let v_start = [ 0, 0, 0, 0 ]
+    , ps = p_start.slice(0)
+    , vs = v_start.slice(0)
+    , iterations = 0
+
+  while (true) {
+    let gs = ps.map( x =>
+                ps.reduce( (tot, c) =>
+                              tot + ( x == c ? 0
+                                    : x < c ? 1
+                                    : -1 )
+                        , 0))
+
+    vs = varadd(vs, gs)
+    ps = varadd(ps, vs)
+    iterations++
+
+    if (varequal(p_start, ps) && varequal(v_start, vs)) break
+  }
+  return iterations
+}
+
+function evenlyDivides(factor, value) {
+  return value % factor == 0
+}
+
+function LCM([big, med, sm]) {
+  let sum = big
+  while (sum % med != 0 || sum % sm != 0) {
+    sum += big
+  }
+  return sum
+}
+
+export const day12part2 = () =>
+  LCM([ timeToRepeat([ 17, 2, -1, 12 ])
+      , timeToRepeat([-12, 1, -17, -14])
+      , timeToRepeat([13, 1, 7, 18])
+      ]
+      .sort(descending))
