@@ -3,8 +3,20 @@ import { parseInteger } from "./converters.js"
 export const loadProgram = (instructions, input) => (
   { ip: 0
   , instructions: instructions.slice(0)
+  , callbackMode: false
   , input: input.slice(0)
   , output: [ ]
+  , halt: false
+  , waiting: false
+  , relativeBase: 0
+  })
+
+export const loadCallbackProgram = (instructions, inputCb, outputCb) => (
+  { ip: 0
+  , instructions: instructions.slice(0)
+  , callbackMode: true
+  , input: inputCb
+  , output: outputCb
   , halt: false
   , waiting: false
   , relativeBase: 0
@@ -52,22 +64,28 @@ function mathInstruction(program, modes, fn) {
 }
 
 function inputInstruction(program, modes) {
-  if (program.input.length <= 0) {
-    program.waiting = true
-  } else {
-    let [ address ] = loadParams(program, modes, 0, 1)
-      , input = program.input.shift()
+  let [ address ] = loadParams(program, modes, 0, 1)
 
-    program.instructions[address] = input
-    program.ip += 2
-    program.waiting = false
+  if (!program.callbackMode && program.input.length <= 0) {
+    program.waiting = true
+    return
   }
+
+  program.ip += 2
+  program.waiting = false
+  program.instructions[address] =
+    program.callbackMode
+      ? program.input()
+      : program.input.shift()
 }
 
 function outputInstruction(program, modes) {
   let [ param ] = loadParams(program, modes, 1, 0)
-  program.output.push(param)
   program.ip += 2
+
+  program.callbackMode
+    ? program.output(param)
+    : program.output.push(param)
 }
 
 function jumpInstruction(program, modes, fn) {
